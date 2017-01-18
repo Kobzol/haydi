@@ -31,7 +31,7 @@ class DLTS(object):
                  init_state,
                  max_depth=sys.maxint,
                  max_states=sys.maxint):
-        def create_iter(step):
+        def create_iter(step=0):
             assert step == 0
             return BreadthFirstIterator2(self,
                                          init_state,
