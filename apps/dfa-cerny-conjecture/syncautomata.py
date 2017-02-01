@@ -6,7 +6,7 @@ import haydi.ext.automata # noqa
 from haydi.ext.xenv import ExperimentEnv # noqa
 from pprint import pprint # noqa
 
-N_SIZE = 4 # Number of states
+N_SIZE = 6 # Number of states
 A_SIZE = 2 # Number of actions (alphabet size)
 
 COUNT = None        # None = iterate all
