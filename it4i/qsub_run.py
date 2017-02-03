@@ -52,7 +52,7 @@ def main():
             "ssh", node, "--",
             os.path.join(dirname, "worker-helper.sh"),
             os.environ["PBS_O_WORKDIR"],
-            worker_count,
+            str(worker_count),
             master
         ]
 
