@@ -11,4 +11,7 @@ export PYTHONPATH=${PBS_O_WORKDIR}:${SRC_DIR}:${PYTHONPATH}
 
 workon pypy
 
-dask-worker --nthreads=1 $2 $3 &
+for ((i=0; i < $2; i++))
+{
+    taskset -c ${i} dask-worker --nthreads=1 --nprocs=1 --no-nanny $3 &
+}

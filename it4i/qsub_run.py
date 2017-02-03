@@ -15,6 +15,7 @@ PORT = 9010
 HTTP_PORT = PORT + 1
 CPUS = multiprocessing.cpu_count()
 
+
 def count_workers(address):
     return sum(Client(address).ncores().values())
 
@@ -51,8 +52,8 @@ def main():
             "ssh", node, "--",
             os.path.join(dirname, "worker-helper.sh"),
             os.environ["PBS_O_WORKDIR"],
-            master,
-            "--nprocs={}".format(str(worker_count))
+            worker_count,
+            master
         ]
 
         subprocess.Popen(worker_args, cwd=dirname)
