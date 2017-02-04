@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
+
+import argparse
 import os
 import subprocess
 import time
@@ -28,8 +30,21 @@ def get_nodes():
 def main():
     print("PLATFORM: {}".format(platform.python_implementation()), file=sys.stderr)
 
-    env_args = os.environ["HAYDI_ARGS"].split(" ")
-    program = env_args[0]
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p", "--profile",
+                        action="store_true",
+                        help="profile script and cluster")
+    parser.add_argument("program")
+    parser.add_argument("program_args",
+                        nargs=argparse.REMAINDER,
+                        default=[],
+                        help="arguments for the launched program")
+
+    args = parser.parse_args(os.environ["HAYDI_ARGS"])
+    program = args.program
+
+    print("PROFILE: {}".format(args.profile), file=sys.stderr)
+    print("PROGRAM: {} {}".format(args.program, " ".join(args.program_args)))
 
     # start scheduler
     hostname = socket.gethostname()
@@ -68,8 +83,8 @@ def main():
 
     # start program
     program = os.path.abspath(program)
-    args = ["--scheduler", hostname, "--port", str(PORT)]
-    args += env_args[1:]
+    program_args = ["--scheduler", hostname, "--port", str(PORT)]
+    program_args += args.program_args
     popen_args = ["time", "-p", "python", program] + args
 
     subprocess.Popen(popen_args, cwd=os.environ["PBS_O_WORKDIR"]).wait()

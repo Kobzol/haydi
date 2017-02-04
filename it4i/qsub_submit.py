@@ -35,6 +35,9 @@ def main():
                         metavar="WORK_DIR",
                         type=str,
                         help="qsub working directory")
+    parser.add_argument("-p", "--profile",
+                        action="store_true",
+                        help="profile script and cluster")
     parser.add_argument("program")
     parser.add_argument("program_args",
                         nargs=argparse.REMAINDER,
@@ -56,7 +59,12 @@ def main():
     if args.project:
         popen_args += ["-A", args.project]
 
-    popen_args += ["-v", "HAYDI_ARGS=\"{}\"".format("{} {}".format(args.program, " ".join(args.program_args)))]
+    haydi_args = ""
+    if args.profile:
+        haydi_args += "--profile "
+
+    haydi_args += "{} {}".format(args.program, " ".join(args.program_args))
+    popen_args += ["-v", "HAYDI_ARGS=\"{}\"".format(haydi_args)]
 
     script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                "qsub_init.sh")
