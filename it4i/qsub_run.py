@@ -32,6 +32,14 @@ def get_program_path(name):
                             stdout=subprocess.PIPE).communicate()[0].strip()
 
 
+def is_scheduler_alive(address):
+    try:
+        Client(address)
+        return True
+    except IOError as e:
+        return False
+
+
 def main():
     print("PLATFORM: {}".format(platform.python_implementation()),
           file=sys.stderr)
@@ -66,7 +74,9 @@ def main():
     ]
     print("SCHEDULER: {}".format(" ".join(scheduler_args)), file=sys.stderr)
     subprocess.Popen(scheduler_args)
-    time.sleep(1)
+
+    while not is_scheduler_alive(master):
+        time.sleep(1)
 
     # start workers
     dirname = os.path.dirname(os.path.abspath(__file__))
