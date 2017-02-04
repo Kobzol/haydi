@@ -40,7 +40,7 @@ def main():
                         default=[],
                         help="arguments for the launched program")
 
-    args = parser.parse_args(os.environ["HAYDI_ARGS"])
+    args = parser.parse_args(os.environ["HAYDI_ARGS"].split(" "))
     program = args.program
 
     print("PROFILE: {}".format(args.profile), file=sys.stderr)
