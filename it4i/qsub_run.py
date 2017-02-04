@@ -62,6 +62,7 @@ def main():
     # start scheduler
     hostname = socket.gethostname()
     master = "{}:{}".format(hostname, PORT)
+    dirname = os.path.dirname(os.path.abspath(__file__))
 
     scheduler_args = []
     if args.profile:
@@ -73,14 +74,12 @@ def main():
         "--http-port", str(HTTP_PORT)
     ]
     print("SCHEDULER: {}".format(" ".join(scheduler_args)), file=sys.stderr)
-    subprocess.Popen(scheduler_args)
+    subprocess.Popen(scheduler_args, cwd=dirname)
 
     while not is_scheduler_alive(master):
         time.sleep(1)
 
     # start workers
-    dirname = os.path.dirname(os.path.abspath(__file__))
-
     nodes = get_nodes()
     total_worker_count = len(nodes) * CPUS - 1
     for i, node in enumerate(nodes):
