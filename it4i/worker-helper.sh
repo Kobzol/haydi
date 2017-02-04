@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# $1 = workdir
+# $2 = worker count
+# $3 = profile
+# $4 = master
+
 PROJECT_PATH=~/projects/haydi
 PROJECT_PATH=$(cd ${PROJECT_PATH}; pwd)
 
@@ -13,5 +18,10 @@ workon pypy
 
 for ((i=0; i < $2; i++))
 {
-    taskset -c ${i} dask-worker --nthreads=1 --nprocs=1 --no-nanny $3 &
+    if [[ $3 == "1" ]]
+    then
+        python -m profile -o worker${i}.pstats `which dask-worker` --nthreads=1 --nprocs=1 --no-nanny $4 &
+    else
+        taskset -c ${i} dask-worker --nthreads=1 --nprocs=1 --no-nanny $4 &
+    fi
 }

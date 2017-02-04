@@ -27,6 +27,11 @@ def get_nodes():
         return [line.strip() for line in f]
 
 
+def get_program_path(name):
+    return subprocess.Popen(["which", name],
+                            stdout=subprocess.PIPE).communicate()[0]
+
+
 def main():
     print("PLATFORM: {}".format(platform.python_implementation()), file=sys.stderr)
 
@@ -44,16 +49,23 @@ def main():
     program = args.program
 
     print("PROFILE: {}".format(args.profile), file=sys.stderr)
-    print("PROGRAM: {} {}".format(args.program, " ".join(args.program_args)))
+    print("PROGRAM: {} {}".format(args.program, " ".join(args.program_args)),
+          file=sys.stderr)
 
     # start scheduler
     hostname = socket.gethostname()
     master = "{}:{}".format(hostname, PORT)
-    subprocess.Popen([
-        "dask-scheduler",
+
+    scheduler_args = []
+    if args.profile:
+        scheduler_args += ["python", "-m", "profile", "-o", "scheduler.pstats"]
+
+    scheduler_args += [
+        get_program_path("dask-scheduler"),
         "--port", str(PORT),
         "--http-port", str(HTTP_PORT)
-    ])
+    ]
+    subprocess.Popen(scheduler_args)
     time.sleep(1)
 
     # start workers
@@ -68,6 +80,7 @@ def main():
             os.path.join(dirname, "worker-helper.sh"),
             os.environ["PBS_O_WORKDIR"],
             str(worker_count),
+            "1" if args.profile else "0",
             master
         ]
 
@@ -82,10 +95,16 @@ def main():
         time.sleep(2)
 
     # start program
+    popen_args = ["time", "-p"]
+
+    if args.profile:
+        popen_args += ["python", "-m", "profile", "-o", "script.pstats"]
+    else:
+        popen_args += ["python"]
+
     program = os.path.abspath(program)
-    program_args = ["--scheduler", hostname, "--port", str(PORT)]
-    program_args += args.program_args
-    popen_args = ["time", "-p", "python", program] + args
+    popen_args += [program, "--scheduler", hostname, "--port", str(PORT)]
+    popen_args += args.program_args
 
     subprocess.Popen(popen_args, cwd=os.environ["PBS_O_WORKDIR"]).wait()
 
