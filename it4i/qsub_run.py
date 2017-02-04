@@ -29,11 +29,12 @@ def get_nodes():
 
 def get_program_path(name):
     return subprocess.Popen(["which", name],
-                            stdout=subprocess.PIPE).communicate()[0]
+                            stdout=subprocess.PIPE).communicate()[0].strip()
 
 
 def main():
-    print("PLATFORM: {}".format(platform.python_implementation()), file=sys.stderr)
+    print("PLATFORM: {}".format(platform.python_implementation()),
+          file=sys.stderr)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--profile",

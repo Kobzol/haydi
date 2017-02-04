@@ -13,7 +13,7 @@ def main():
                         type=str,
                         help="qsub queue")
     parser.add_argument("-A", "--project",
-                        metavar="PROJET",
+                        metavar="PROJECT",
                         type=str,
                         help="qsub project")
     parser.add_argument("-w", "--walltime",
