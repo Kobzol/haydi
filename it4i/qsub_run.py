@@ -50,8 +50,6 @@ def main():
     program = args.program
 
     print("PROFILE: {}".format(args.profile), file=sys.stderr)
-    print("PROGRAM: {} {}".format(args.program, " ".join(args.program_args)),
-          file=sys.stderr)
 
     # start scheduler
     hostname = socket.gethostname()
@@ -66,6 +64,7 @@ def main():
         "--port", str(PORT),
         "--http-port", str(HTTP_PORT)
     ]
+    print("SCHEDULER: {}".format(" ".join(scheduler_args)), file=sys.stderr)
     subprocess.Popen(scheduler_args)
     time.sleep(1)
 
@@ -85,6 +84,8 @@ def main():
             master
         ]
 
+        print("WORKER {}: {}".format(i, " ".join(worker_args)),
+              file=sys.stderr)
         subprocess.Popen(worker_args, cwd=dirname)
 
     # wait for workers to connect
@@ -107,6 +108,7 @@ def main():
     popen_args += [program, "--scheduler", hostname, "--port", str(PORT)]
     popen_args += args.program_args
 
+    print("PROGRAM: {}".format(popen_args), file=sys.stderr)
     subprocess.Popen(popen_args, cwd=os.environ["PBS_O_WORKDIR"]).wait()
 
 
