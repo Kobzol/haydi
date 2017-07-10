@@ -40,7 +40,6 @@ class Pipeline(object):
         self.domain = domain
         self.method = method
         self.transformations = ()
-        self.take_count = None
 
     def __iter__(self):
         """Run the domain and iterate over the result.
@@ -135,14 +134,6 @@ class Pipeline(object):
         pipeline.action = action.Reduce(reduce_fn, init_value, associative)
         return pipeline
 
-    def take(self, count):
-        """
-        Transformation: Take a first n elements from the pipeline.
-        """
-        pipeline = copy(self)
-        pipeline.take_count = count
-        return pipeline
-
     def first(self, default=None):
         """
         Action: Take the first element from the pipeline
@@ -151,10 +142,9 @@ class Pipeline(object):
         """
 
         pipeline = copy(self)
-        pipeline.take_count = 1
         pipeline.action = action.Collect()
         pipeline.action.postprocess = lambda x: x[0] if x else default
-        return pipeline
+        return pipeline.take(1)
 
     def _add_transformation(self, transformation):
         pipeline = copy(self)
@@ -186,6 +176,11 @@ class Pipeline(object):
         """Transformation: Map function on each elements in the pipeline"""
         return self._add_transformation(
             transform.MapTransformation(fn))
+
+    def take(self, count):
+        """Transformation: Take first ``count`` elements from the pipeline"""
+        return self._add_transformation(
+            transform.TakeTransformation(count))
 
     def __repr__(self):
         s = "<Pipeline for {}: method={}".format(self.domain.name,

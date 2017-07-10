@@ -1,5 +1,3 @@
-import itertools
-
 import iterhelpers
 
 
@@ -9,10 +7,6 @@ class SerialContext(object):
             timeout=None, otf_trace=None):
         it = iterhelpers.make_iter_by_method(pipeline.domain, pipeline.method)
         it = iterhelpers.apply_transformations(it, pipeline.transformations)
-
-        if pipeline.take_count is not None:
-            it = itertools.islice(it,
-                                  pipeline.take_count)
 
         if timeout:
             it = iterhelpers.iterate_with_timeout(it, timeout)

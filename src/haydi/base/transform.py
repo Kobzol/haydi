@@ -57,3 +57,25 @@ class FilterTransformation(Transformation):
                 yield v
             else:
                 yield skip1
+
+
+class TakeTransformation(Transformation):
+
+    def __init__(self, count):
+        self.count = count
+
+    def transform_iter(self, iterator):
+        i = 0
+        while i < self.count:
+            yield iterator.next()
+            i += 1
+        raise StopIteration()
+
+    def transform_skip_iter(self, iterator):
+        i = 0
+
+        while i < self.count:
+            v = iterator.next()
+            if not isinstance(v, StepSkip):
+                i += 1
+            yield v
