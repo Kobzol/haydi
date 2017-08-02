@@ -11,6 +11,7 @@ try:
     from distributed import Client, LocalCluster
     from distributed.http import HTTPScheduler
 
+    from haydi.base.pipeline import extract_takes
     from haydi.base.exception import HaydiException, TimeoutException
     from .strategy import StepStrategy, PrecomputeStrategy, GeneratorStrategy
     from .trace import OTFTracer, Tracer
@@ -144,6 +145,8 @@ class DistributedContext(object):
         if action.worker_reduce_fn is None:
             results = list(itertools.chain.from_iterable(results))
 
+        results = results[:self._take_size(pipeline)]
+
         haydi_logger.info("Size of domain: {}".format(pipeline.domain.size))
         tracer.trace_finish()
 
@@ -219,3 +222,10 @@ class DistributedContext(object):
             count = len(times)
             haydi_logger.info("Batch size {} had {} jobs with avg time {}"
                               .format(size, count, sum(times) / float(count)))
+
+    def _take_size(self, pipeline):
+        takes = extract_takes(pipeline)
+        if len(takes) > 0:
+            return min(t.count for t in takes)
+        else:
+            return pipeline.domain.size

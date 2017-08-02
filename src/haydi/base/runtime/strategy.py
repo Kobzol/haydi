@@ -1,4 +1,5 @@
 from haydi import Values
+from haydi.base.pipeline import extract_takes
 from haydi.base.runtime.iterhelpers import make_iter_by_method
 from haydi.base.runtime.util import TimeoutManager
 from .worker import worker_step, worker_precomputed, worker_generator
@@ -76,3 +77,6 @@ class PrecomputeStrategy(WorkerStrategy):
 class GeneratorStrategy(WorkerStrategy):
     def _get_worker_fn(self):
         return worker_generator
+
+    def _compute_size(self, pipeline):
+        return min(t.count for t in extract_takes(pipeline))

@@ -1,8 +1,14 @@
 
 from copy import copy
 
-from .runtime.serialcontext import SerialContext
+from haydi.base.exception import HaydiException
 from . import action
+from .runtime.serialcontext import SerialContext
+
+
+def extract_takes(pipeline):
+    return tuple(t for t in pipeline.transformations
+          if isinstance(t, transform.TakeTransformation))
 
 
 class Pipeline(object):
@@ -161,6 +167,8 @@ class Pipeline(object):
             timeout(float or timedelta): Time limit for the computation.
             otf_trace(bool): Write tracing log in OTF format.
         """
+        self._check_validity()
+
         if not ctx:
             ctx = SerialContext()
 
@@ -194,5 +202,11 @@ class Pipeline(object):
 
         s += ">"
         return s
+
+    def _check_validity(self):
+        takes = extract_takes(self)
+        if self.method == "generate" and len(takes) < 1:
+            raise HaydiException("Cannot generate without take "
+                                 "(size is not known)")
 
 from . import transform  # noqa
