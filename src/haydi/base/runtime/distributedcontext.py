@@ -144,9 +144,6 @@ class DistributedContext(object):
         if action.worker_reduce_fn is None:
             results = list(itertools.chain.from_iterable(results))
 
-        if pipeline.take_count:
-            results = results[:pipeline.take_count]
-
         haydi_logger.info("Size of domain: {}".format(pipeline.domain.size))
         tracer.trace_finish()
 

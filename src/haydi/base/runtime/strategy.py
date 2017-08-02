@@ -12,10 +12,7 @@ class WorkerStrategy(object):
         self.exhausted = False
 
     def _compute_size(self, pipeline):
-        if pipeline.method == "generate" and pipeline.take_count:
-            return pipeline.take_count
-        else:
-            return pipeline.domain.size
+        return pipeline.domain.size
 
     def create_cached_args(self):
         return {
