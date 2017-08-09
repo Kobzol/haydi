@@ -248,6 +248,9 @@ class DistributedContext(object):
         Returns: (Pipeline, Callable)
 
         """
+        if pipeline.method == "generate":
+            return (pipeline, lambda r: r)
+
         take_indices = tuple(i for i, transform
                              in enumerate(pipeline.transformations)
                              if isinstance(transform, TakeTransformation))
