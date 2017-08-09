@@ -1,6 +1,8 @@
 import utils
 from copy import copy
 
+from .runtime.iterhelpers import iterate_steps
+
 
 def cache_transform(transformation):
     cache = {}
@@ -97,15 +99,7 @@ class Domain(object):
             >>> list(hd.Range(10).filter(lambda x: x % 3 == 0).iterate_steps(1, 7))
             [3, 6]
         """
-        i = start
-        it = self.create_skip_iter(start)
-        while i < end:
-            v = next(it)
-            if isinstance(v, StepSkip):
-                i += v.value
-            else:
-                yield v
-                i += 1
+        return iterate_steps(self.create_skip_iter(start), start, end)
 
     # Internal
 
