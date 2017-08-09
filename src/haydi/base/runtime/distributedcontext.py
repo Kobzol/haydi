@@ -5,14 +5,19 @@ import os
 import socket
 import time
 from Queue import Empty
+from copy import copy
 from datetime import timedelta
+
 
 try:
     from distributed import Client, LocalCluster
     from distributed.http import HTTPScheduler
 
+    from haydi import Values
+    from haydi.base.action import Collect
     from haydi.base.pipeline import extract_takes
     from haydi.base.exception import HaydiException, TimeoutException
+    from haydi.base.transform import TakeTransformation
     from .strategy import StepStrategy, PrecomputeStrategy, GeneratorStrategy
     from .trace import OTFTracer, Tracer
 
@@ -123,7 +128,9 @@ class DistributedContext(object):
         worker_count = get_worker_count(self.executor)
         tracer.trace_workers(worker_count)
 
-        strategy = create_strategy(pipeline, timeout)
+        (parallel_pipe, serial_fn) = self._split_pipeline(pipeline)
+
+        strategy = create_strategy(parallel_pipe, timeout)
         size = strategy.size
 
         name = "{} (pid {})".format(socket.gethostname(), os.getpid())
@@ -140,14 +147,15 @@ class DistributedContext(object):
         jobs = self._run_computation(scheduler, timeout)
         results = [job.result for job in jobs]
 
-        action = pipeline.action
+        action = parallel_pipe.action
 
         if action.worker_reduce_fn is None:
             results = list(itertools.chain.from_iterable(results))
 
-        results = results[:self._take_size(pipeline)]
+        results = serial_fn(results)
 
-        haydi_logger.info("Size of domain: {}".format(pipeline.domain.size))
+        haydi_logger.info("Size of domain: {}"
+                          .format(parallel_pipe.domain.size))
         tracer.trace_finish()
 
         if action.global_reduce_fn is None or len(results) == 0:
@@ -229,3 +237,32 @@ class DistributedContext(object):
             return min(t.count for t in takes)
         else:
             return pipeline.domain.size
+
+    def _split_pipeline(self, pipeline):
+        """
+        Returns pipeline that should be distributed and a function that will
+        transform the result of the distributed pipeline.
+        Args:
+            pipeline:
+
+        Returns: (Pipeline, Callable)
+
+        """
+        take_indices = tuple(i for i, transform
+                             in enumerate(pipeline.transformations)
+                             if isinstance(transform, TakeTransformation))
+        if len(take_indices) == 0:
+            return (pipeline, lambda r: r)
+
+        parallel = copy(pipeline)
+        parallel.action = Collect()
+        parallel.transformations = pipeline.transformations[:take_indices[-1]]
+
+        def serial(result):
+            values = Values(result)
+            pipe = values.iterate()
+            pipe.action = pipeline.action
+            pipe.transformations = pipeline.transformations[take_indices[-1]:]
+            return pipe.run()
+
+        return (parallel, serial)
