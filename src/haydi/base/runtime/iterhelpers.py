@@ -14,11 +14,10 @@ def generate(domain):
         yield domain.generate_one()
 
 
-def iterate_steps(domain, transformations, start, end):
+def iterate_steps(it, start, end):
     from haydi import StepSkip
 
     i = start
-    it = apply_transformations(domain.create_skip_iter(start), transformations)
     while i < end:
         v = next(it)
         if isinstance(v, StepSkip):
@@ -31,6 +30,12 @@ def iterate_steps(domain, transformations, start, end):
 def apply_transformations(iterator, transformations):
     for tr in transformations:
         iterator = tr.transform_iter(iterator)
+    return iterator
+
+
+def apply_skip_transformations(iterator, transformations):
+    for tr in transformations:
+        iterator = tr.transform_skip_iter(iterator)
     return iterator
 
 

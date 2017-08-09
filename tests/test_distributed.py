@@ -65,6 +65,12 @@ def test_dist_filter(cluster4):
 
 
 @slow
+def test_dist_filter_size(cluster4):
+    r = hd.Range(1000).filter(lambda x: x % 2 == 0)
+    assert len(r.run(cluster4.ctx)) == 500
+
+
+@slow
 def test_dist_simple_take(cluster4):
     x = Range(10).take(3)
     result = x.run(cluster4.ctx)

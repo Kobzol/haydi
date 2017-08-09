@@ -3,7 +3,8 @@ import random
 import socket
 import time
 
-from .iterhelpers import generate, iterate_steps, apply_transformations
+from .iterhelpers import generate, iterate_steps, apply_transformations, \
+    apply_skip_transformations
 from .scheduler import Job
 
 
@@ -51,9 +52,11 @@ def worker_step(arg):
     :rtype: Job
     """
     worker_args, start, size = arg
-    iterator = iterate_steps(worker_args["domain"],
-                             worker_args["transformations"],
-                             start, start + size)
+    it = apply_skip_transformations(
+        worker_args["domain"].create_skip_iter(start),
+        worker_args["transformations"]
+    )
+    iterator = iterate_steps(it, start, start + size)
 
     return worker_compute(iterator, start, size,
                           worker_args["timelimit"],
