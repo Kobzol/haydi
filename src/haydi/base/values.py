@@ -39,6 +39,9 @@ class Values(Domain):
     def to_values(self, max_size=None):
         return self
 
+    def _get_args(self):
+        return self.values
+
 
 class CnfValues(Domain):
     """
@@ -86,3 +89,6 @@ class CnfValues(Domain):
 
     def to_cnf_values(self, max_size=None):
         return self
+
+    def _get_args(self):
+        return self.values

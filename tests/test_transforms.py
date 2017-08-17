@@ -46,3 +46,23 @@ def test_filter():
 
     f = r.filter(lambda x: False, strict=True)
     assert f.strict
+
+
+def test_transform_compare():
+    def filter(x):
+        return True
+
+    a = hd.Range(5).filter(filter)
+    b = hd.Range(5).filter(filter)
+
+    assert a == b
+
+
+def test_transform_hash():
+    def filter(x):
+        return True
+
+    a = hd.Range(5).filter(filter)
+    b = hd.Range(5).filter(filter)
+
+    assert len({a, b}) == 1

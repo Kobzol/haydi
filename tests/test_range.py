@@ -78,3 +78,16 @@ def test_range_to_values_maxsize():
     v = r.to_values(max_size=r.size - 1)
 
     assert r == v
+
+
+def test_range_compare():
+    assert hd.Range(5) == hd.Range(5)
+    assert hd.Range(5) != hd.Range(6)
+    assert hd.Range(1, 100, 3) == hd.Range(1, 100, 3)
+    assert hd.Range(1, 100, 3) != hd.Range(1, 100, 4)
+
+
+def test_range_hash():
+    a = hd.Range(5)
+    b = hd.Range(5)
+    assert len({a, b}) == 1

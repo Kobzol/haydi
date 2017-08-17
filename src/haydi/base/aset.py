@@ -41,6 +41,12 @@ class ASet(Domain):
     def create_cn_iter(self):
         yield self.cache[0]
 
+    def _get_args(self):
+        return (self.size, )
+
+    def __eq__(self, other):
+        return self is other
+
     def __repr__(self):
         return "<ASet id={} size={} name={}>".format(
             self.aset_id, self._size, self.name)

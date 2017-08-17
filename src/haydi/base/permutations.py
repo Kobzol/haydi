@@ -26,3 +26,6 @@ class Permutations(Domain):
 
     def _remap_domains(self, transformation):
         return Permutations(transformation(self.domain), self.name)
+
+    def _get_args(self):
+        return self.domain

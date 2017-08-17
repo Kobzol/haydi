@@ -31,3 +31,14 @@ def test_permutations_to_values_maxsize():
     assert isinstance(v, hd.Permutations)
     assert isinstance(v.domain, hd.Values)
     assert list(v) == list(p)
+
+
+def test_permutations_compare():
+    r = hd.Range(5)
+    assert hd.Permutations(r) == hd.Permutations(r)
+    assert hd.Permutations(r) != hd.Permutations(hd.Range(6))
+
+
+def test_permutations_hash():
+    assert len({hd.Permutations(hd.Range(5)),
+                hd.Permutations(hd.Range(5))}) == 1

@@ -102,8 +102,22 @@ def test_generate_one_transformed_domain():
     r1 = hd.Range(10).filter(lambda x: x == 7 or x == 1)
     r2 = hd.Range(3).map(lambda x: x * 10)
     p = r1 * r2
-    expected = set([(1, 0), (1, 10), (1, 20), (7, 0), (7, 10), (7, 20)])
+    expected = {(1, 0), (1, 10), (1, 20), (7, 0), (7, 10), (7, 20)}
     assert set(p) == expected
 
     result = p.generate(160)
     assert set(result) == expected
+
+
+def test_domain_compare():
+    a = hd.Range(10)
+    b = hd.Values(xrange(10))
+
+    assert a != b
+
+
+def test_domain_hash():
+    a = hd.Range(10)
+    b = hd.Values(xrange(10))
+
+    assert len({a, b}) == 2

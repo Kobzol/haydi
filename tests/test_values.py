@@ -53,6 +53,15 @@ def test_values_to_values():
     assert v.to_values() == v
 
 
+def test_values_compare():
+    assert hd.Values(("a", "b")) == hd.Values(("a", "b"))
+    assert hd.Values(("a", "b")) != hd.Values(("a", "c"))
+
+
+def test_values_hash():
+    assert len({hd.Values(("a", "b")), hd.Values(("a", "b"))}) == 1
+
+
 def test_cnfs_to_values():
     ax = hd.ASet(3, "a")
     a0, a1, a2 = ax
@@ -87,3 +96,13 @@ def test_cnfs_invalid_values():
 
     with pytest.raises(Exception):
         hd.CnfValues([(a2, a2)])
+
+
+def test_cnfs_compare():
+    assert hd.CnfValues(("a", "b")) == hd.CnfValues(("a", "b"))
+    assert hd.CnfValues(("a", "b")) != hd.CnfValues(("a", "c"))
+    assert hd.CnfValues(("a", "b")) != hd.Values(("a", "b"))
+
+
+def test_cnfs_hash():
+    assert len({hd.CnfValues(("a", "b")), hd.CnfValues(("a", "b"))}) == 1

@@ -313,3 +313,14 @@ def test_is_isomoprhic():
     assert hd.is_isomorphic(x, y)
     assert not hd.is_isomorphic(x, z)
     assert not hd.is_isomorphic(x, w)
+
+
+def test_aset_compare():
+    a = ASet(2, "a")
+    b = ASet(2, "a")
+
+    assert a != b
+
+
+def test_aset_hash():
+    assert len({ASet(2, "a"), ASet(2, "a")}) == 2

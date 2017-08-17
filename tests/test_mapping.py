@@ -96,3 +96,21 @@ def test_mappings_map_class():
 
     m = hd.Mappings(r, r, map_class=dict)
     assert not m.strict
+
+
+def test_mappings_compare():
+    a = hd.Range(5)
+    b = hd.Values(("a", "b"))
+
+    c = hd.Mappings(a, b)
+    d = hd.Mappings(a, b)
+
+    assert c == d
+    assert hd.Mappings(a, b, dict) != d
+
+
+def test_mappings_hash():
+    a = hd.Range(5)
+    b = hd.Values(("a", "b"))
+
+    assert len({hd.Mappings(a, b), hd.Mappings(a, b)}) == 1

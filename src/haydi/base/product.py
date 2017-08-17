@@ -322,6 +322,9 @@ class Product(Domain):
         return Product(tuple(transformation(d) for d in self.domains),
                        self.name, self.unordered, self.cache_size)
 
+    def _get_args(self):
+        return (self.domains, self.unordered)
+
     def __mul__(self, other):
         return Product(self.domains + (other,))
 

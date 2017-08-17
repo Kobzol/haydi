@@ -337,6 +337,22 @@ class Domain(object):
         """
         return self
 
+    def _get_args(self):
+        """
+        Return arguments that uniquely identify this domain.
+        Returns: tuple
+        """
+        return ()
+
+    def __eq__(self, other):
+        if self.__class__ != other.__class__:
+            return False
+
+        return tuple(self._get_args()) == tuple(other._get_args())
+
+    def __hash__(self):
+        return hash(tuple(self._get_args()))
+
     def __repr__(self):
         ITEMS_LIMIT = 5
         ITEM_CHAR_LIMIT = 24
@@ -427,6 +443,9 @@ class TransformedDomain(Domain):
         pipeline = self.parent.generate()._add_transformation(
             self.transformation)
         return pipeline.first().run()
+
+    def _get_args(self):
+        return (self.parent, self.transformation)
 
 
 skip1 = StepSkip(1)

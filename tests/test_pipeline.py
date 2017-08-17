@@ -1,5 +1,5 @@
 import pytest
-import haydi as hd # noqa
+import haydi as hd
 
 
 def test_iterate():

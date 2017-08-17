@@ -96,3 +96,19 @@ def test_sequence_operator():
     s2 = r ** 4
 
     assert list(s1) == list(s2)
+
+
+def test_sequence_compare():
+    a = hd.Range(5)
+
+    assert hd.Sequences(a, 2) == hd.Sequences(a, 2)
+    assert hd.Sequences(a, 1) != hd.Sequences(a, 2)
+    assert hd.Sequences(a, 1, 5) == hd.Sequences(a, 1, 5)
+    assert hd.Sequences(a, 1, 5) != hd.Sequences(a, 1, 2)
+    assert hd.Sequences(a, 1) != hd.Sequences(hd.Range(6), 1)
+
+
+def test_sequence_hash():
+    a = hd.Range(5)
+
+    assert len({hd.Sequences(a, 2), hd.Sequences(a, 2)}) == 1

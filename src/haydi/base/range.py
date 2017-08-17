@@ -79,3 +79,6 @@ class Range(Domain):
 
     def create_cn_iter(self):
         return self.create_iter()
+
+    def _get_args(self):
+        return (self.start, self.end, self.step)

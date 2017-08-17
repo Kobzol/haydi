@@ -75,3 +75,6 @@ class Sequences(Domain):
     def _remap_domains(self, transformation):
         return Sequences(transformation(self.domain), self.min_length,
                          self.max_length, self.name)
+
+    def _get_args(self):
+        return (self.domain, self.min_length, self.max_length)

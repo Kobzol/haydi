@@ -158,3 +158,7 @@ class Subsets(Domain):
     def _remap_domains(self, transformation):
         return Subsets(transformation(self.domain), self.min_size,
                        self.max_size, self.set_class, self.name)
+
+    def _get_args(self):
+        return (self.domain, self.min_size, self.max_size,
+                self.set_class)

@@ -82,28 +82,17 @@ def test_uproduct_iterate():
     p = hd.Product((r1, r1), unordered=True)
 
     result = list(p)
-    assert set(result) == set(
-        [(1, 0),
-         (2, 0),
-         (3, 0),
-         (2, 1),
-         (3, 1),
-         (3, 2)])
+    assert set(result) == {(1, 0), (2, 0), (3, 0), (2, 1), (3, 1), (3, 2)}
     assert len(result) == p.size
 
     p = hd.Product((r1, r1, r1), unordered=True)
     result = list(p)
-    assert set(result) == set(
-        [(2, 1, 0),
-         (3, 1, 0),
-         (3, 2, 0),
-         (3, 2, 1),
-         ])
+    assert set(result) == {(2, 1, 0), (3, 1, 0), (3, 2, 0), (3, 2, 1)}
     assert len(result) == p.size
 
     p = hd.Product((r1, r1, r1, r1), unordered=True)
     result = list(p)
-    assert set(result) == set([(3, 2, 1, 0)])
+    assert set(result) == {(3, 2, 1, 0)}
     assert len(result) == p.size
 
 
@@ -318,8 +307,8 @@ def test_uproduct_steps2():
     assert list(c.iterate_steps(0, 9)) == []
     assert list(c.iterate_steps(0, 10)) == [((1, 0), (0, 1))]
     assert list(c.iterate_steps(0, 11)) == [((1, 0), (0, 1)), ((1, 1), (0, 1))]
-    assert set(c.iterate_steps(0, 36)) == \
-        set((((1, 0), (0, 1)), ((1, 1), (1, 0)), ((1, 1), (0, 1))))
+    assert set(c.iterate_steps(0, 36)) ==\
+        {((1, 0), (0, 1)), ((1, 1), (1, 0)), ((1, 1), (0, 1))}
 
     assert list(c.iterate_steps(8, 9)) == []
     assert list(c.iterate_steps(9, 10)) == [((1, 0), (0, 1))]
@@ -327,7 +316,7 @@ def test_uproduct_steps2():
     assert list(c.iterate_steps(14, 20)) == []
     assert list(c.iterate_steps(14, 26)) == [((1, 1), (1, 0))]
     assert set(c.iterate_steps(8, 36)) == \
-        set((((1, 0), (0, 1)), ((1, 1), (1, 0)), ((1, 1), (0, 1))))
+        {((1, 0), (0, 1)), ((1, 1), (1, 0)), ((1, 1), (0, 1))}
 
 
 def test_product_to_values():
@@ -349,3 +338,18 @@ def test_product_to_values_maxsize():
     assert isinstance(v, hd.Product)
     assert all(isinstance(d, hd.Values) for d in v.domains)
     assert list(v) == list(p)
+
+
+def test_product_compare():
+    a = hd.Range(5)
+    b = hd.Range(6)
+
+    assert a * b == a * b
+    assert a * b == hd.Product((a, b))
+    assert a * b != a * hd.Range(10)
+
+
+def test_product_hash():
+    a = hd.Range(5)
+
+    assert len({a * a, a * a}) == 1

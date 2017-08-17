@@ -110,9 +110,21 @@ def test_sets_invalid():
 def test_sets_in_sets():
     s = hd.Subsets(hd.Subsets(hd.Range(1), set_class=frozenset),
                    set_class=frozenset)
-    assert set(s) == set([
-        frozenset(),
-        frozenset([frozenset()]),
-        frozenset([frozenset(), frozenset([0])]),
-        frozenset([frozenset([0])]),
-    ])
+    assert set(s) == {frozenset(), frozenset([frozenset()]),
+                      frozenset([frozenset(), frozenset([0])]),
+                      frozenset([frozenset([0])])}
+
+
+def test_sets_compare():
+    a = hd.Range(5)
+    assert hd.Subsets(a) == hd.Subsets(a)
+    assert hd.Subsets(a) != hd.Subsets(hd.Range(6))
+    assert hd.Subsets(a, 1, 2) == hd.Subsets(a, 1, 2)
+    assert hd.Subsets(a, 1, 2) != hd.Subsets(a, 1, 3)
+    assert hd.Subsets(a, set_class=set) != hd.Subsets(a)
+
+
+def test_sets_hash():
+    a = hd.Range(5)
+
+    assert len({hd.Subsets(a), hd.Subsets(a)}) == 1

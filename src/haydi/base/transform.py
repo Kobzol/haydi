@@ -12,6 +12,18 @@ class Transformation(object):
     def size_of_transformed_domain(self, size):
         return size
 
+    def _get_args(self):
+        return ()
+
+    def __eq__(self, other):
+        if self.__class__ != other.__class__:
+            return False
+
+        return tuple(self._get_args()) == tuple(other._get_args())
+
+    def __hash__(self):
+        return hash(self._get_args())
+
 
 class MapTransformation(Transformation):
 
@@ -29,6 +41,9 @@ class MapTransformation(Transformation):
                 yield v
             else:
                 yield fn(v)
+
+    def _get_args(self):
+        return (self.fn, )
 
 
 class FilterTransformation(Transformation):
@@ -57,3 +72,6 @@ class FilterTransformation(Transformation):
                 yield v
             else:
                 yield skip1
+
+    def _get_args(self):
+        return (self.fn, self.strict)

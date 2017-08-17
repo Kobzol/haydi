@@ -67,3 +67,6 @@ class Mappings(Domain):
                         transformation(self.value_domain),
                         self.map_class,
                         self.name)
+
+    def _get_args(self):
+        return (self.key_domain, self.value_domain, self.map_class)

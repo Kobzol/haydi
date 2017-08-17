@@ -75,3 +75,6 @@ class Join(Domain):
 
     def __add__(self, other):
         return Join(self.domains + (other,))
+
+    def _get_args(self):
+        return (self.domains, self.ratios)

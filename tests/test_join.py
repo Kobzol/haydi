@@ -108,3 +108,21 @@ def test_join_to_values_maxsize():
     assert isinstance(v, hd.Join)
     assert all(isinstance(d, hd.Values) for d in v.domains)
     assert list(c) == list(v)
+
+
+def test_join_compare():
+    a = hd.Range(5)
+    b = hd.Values(("a", "b"))
+
+    c = a + b
+    d = a + b
+
+    assert c == d
+    assert (hd.Range(6) + b) != c
+
+
+def test_join_hash():
+    a = hd.Range(5)
+    b = hd.Values(("a", "b"))
+
+    assert len({a + b, a + b}) == 1
