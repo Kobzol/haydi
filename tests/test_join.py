@@ -1,3 +1,5 @@
+import pytest
+
 import haydi as hd
 
 
@@ -87,14 +89,18 @@ def test_join_name():
     assert j.name == "TestJoin"
 
 
-def test_join_to_values():
+@pytest.mark.parametrize("domain,method", [
+    (hd.Values, "to_values"),
+    (hd.CnfValues, "to_cnf_values")
+])
+def test_join_to_values(domain, method):
     a = hd.Range(5)
-    b = hd.Values(("a", "b"))
+    b = domain(("a", "b"))
     c = a + b
 
-    v = c.to_values()
+    v = getattr(c, method)()
 
-    assert isinstance(v, hd.Values)
+    assert isinstance(v, domain)
     assert list(c) == list(v)
 
 
